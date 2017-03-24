@@ -13,6 +13,6 @@ lattice[3*x + 3*Lx*y + 3*Lx*Ly*t + 1]
 
 My file main.cpp updates the lattice the appropriate number of times and extracts our data from the configurations, writing them to .csv files at the end. From there I can analyze the data elsewhere (possibly with numpy and matplotlib... we'll see). The issue is making sure all the functions I call are correct, and that problem lies in operators.cpp and link_update.cpp.
 
-Still not wholly confident that my update() function in link_update.cpp is correct, mainly because I rewrote it from scratch in a way to get rid of the huge amount of modular arithmetic I was doing and got a totally different answer for <cos(U_p)>, which is calculated using the avg_plaquette() function, which I did not change. I am confident that my avg_plaquette() is correct.
+Still not wholly confident that my update() function in link_update.cpp is correct, mainly because I rewrote it from scratch in a way to get rid of the huge amount of modular arithmetic I was doing and got a totally different answer for <cos(U_p)>, which is calculated using the avg_plaquette() function, which I did not change. I am confident that my avg_plaquette() is correct. But! I just rewrote avg_plaquette() in a way to stop evaluating % everywhere and I get a totally different <cos(U_p)>! I obviously have a long way to go...
 
 I have yet to write the other operators. I'll get to that in due course.

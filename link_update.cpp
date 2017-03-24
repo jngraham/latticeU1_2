@@ -31,28 +31,28 @@ std::default_random_engine update_generator;
 std::uniform_int_distribution<int> int_distribution(0,N_V-1);
 std::uniform_real_distribution<double> real_distribution(0.0,1.0);
 
-int xnext;
-int xprev;
-int ynext;
-int yprev;
-int tnext;
-int tprev;
-
-double old_link;
-double new_link;
-
-double staple1;
-double staple2;
-double staple3;
-double staple4;
-
-double old_action;
-double new_action;
-
-double C;
-double z;
-
 int update(double* array, double* gauss){
+
+  int xnext;
+  int xprev;
+  int ynext;
+  int yprev;
+  int tnext;
+  int tprev;
+
+  double old_link;
+  double new_link;
+
+  double staple1;
+  double staple2;
+  double staple3;
+  double staple4;
+
+  double old_action;
+  double new_action;
+
+  double C;
+  double z;
 
   // int N_acceptances = 0;
 

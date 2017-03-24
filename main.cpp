@@ -78,6 +78,8 @@ int main(){
 
   // update the field configuration so we "forget" the initial configuration
 
+  std::cout << "initial average plaquette (should be 1): " << avg_plaquette(lattice) << "\n";
+
   for (size_t i = 0; i < N_equilibration_configs; i++){
     update(lattice, V);
   }
@@ -97,7 +99,7 @@ int main(){
 
       // find the field operators for nt = 0
 
-      jpc_plus_zero = jpc_plus(lattice, 0);
+      jpc_plus_zero = jpc_plus(lattice, this_avg_plaquette, 0);
       jpc_minus_zero = jpc_minus(lattice, 0);
       flux_zero = flux(lattice, 0);
 
@@ -198,7 +200,7 @@ int main(){
   output.open("outputs.txt");
 
   output << "<cos U_p> = " << sum / N_samples << std::endl;
-  // std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
+  std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
 
   output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
