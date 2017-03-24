@@ -25,34 +25,11 @@ my life harder but the computer's life easier.
 
 #include "link_update.h"
 #include "operators.h"
+#include "globals.h"
 
 clock_t t1 = clock();
 
-// Parameters for the size of the array
-
-const int Lx = 10;
-const int Ly = 10;
-const int Lt = 10;
-
-// Parameters for the simulation
-
-const double beta = 2.2;
-
-const int N_equilibration_configs = 2000;
-const int N_configs_per_sample = 500;
-const int N_samples = 10;
-
-const int N_configs = N_configs_per_sample * N_samples;
-
-const int N_links = Lx * Ly * Lt * 3;
-
 int main(){
-
-  // Parameters for selecting a new link
-
-  const int N_V = 200;
-  const double mu = 0;
-  const double sigma = 1.2;
 
   // set up the RNG
   // seed??
@@ -92,7 +69,7 @@ int main(){
   // update the field configuration so we "forget" the initial configuration
 
   for (size_t i = 0; i < N_equilibration_configs; i++){
-    update(lattice, V, beta, Lx, Ly, Lt);
+    update(lattice, V);
   }
 
   // for (int x = 0; x < Lx; x++){
@@ -110,11 +87,11 @@ int main(){
   output.open("outputs.txt");
 
   for(size_t i = 0; i < N_configs; i++){
-    update(lattice, V, beta, Lx, Ly, Lt);
+    update(lattice, V);
 
     // calculate data
 
-    avg_plaquette_data[i] = avg_plaquette(lattice, Lx, Ly, Lt);
+    avg_plaquette_data[i] = avg_plaquette(lattice);
     // output << avg_plaquette_data[i] << " ";
 
   }

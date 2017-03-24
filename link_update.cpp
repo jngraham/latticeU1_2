@@ -15,6 +15,7 @@ Here I write the function(s) to update the lattice
 #include <stdlib.h>
 
 #include "link_update.h"
+#include "globals.h"
 
 /*
 This function is kinda gnarly and dirty because I will use it to actually change
@@ -27,7 +28,7 @@ proper and so on and so on
 */
 
 std::default_random_engine update_generator;
-std::uniform_int_distribution<int> int_distribution(0,199);
+std::uniform_int_distribution<int> int_distribution(0,N_V-1);
 std::uniform_real_distribution<double> real_distribution(0.0,1.0);
 
 int xnext;
@@ -51,36 +52,36 @@ double new_action;
 double C;
 double z;
 
-int update_corners(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
-int update_edges(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
-int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
+int update_corners(double* array, double* gauss);
+int update_edges(double* array, double* gauss);
+int update_bulk(double* array, double* gauss);
 
-int update(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
+int update(double* array, double* gauss){
 
   // for the corners of the lattice (8 of them)
 
-  // update_corners(array, gauss, beta, Lx, Ly, Lt);
+  // update_corners(array, gauss);
 
   // for the edges of the lattice (12 of them)
 
-  // update_edges(array, gauss, beta, Lx, Ly, Lt);
+  // update_edges(array, gauss);
 
   // for the bulk of the lattice
 
-  update_bulk(array, gauss, beta, Lx, Ly, Lt);
+  update_bulk(array, gauss);
 
   return 0;
 }
 
-int update_corners(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
+int update_corners(double* array, double* gauss){
   return 0;
 }
 
-int update_edges(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
+int update_edges(double* array, double* gauss){
   return 0;
 }
 
-int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
+int update_bulk(double* array, double* gauss){
 
   int N_links = 3*Lx*Ly*Lt;
   // int N_acceptances = 0;

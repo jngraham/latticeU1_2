@@ -12,8 +12,9 @@ Here I write the functions for the field operators on the lattice
 #include <cmath>
 
 #include "operators.h"
+#include "globals.h"
 
-double avg_plaquette(double* array, int Lx, int Ly, int Lt){
+double avg_plaquette(double* array){
 
   double plaquette_sum = 0;
 
@@ -39,14 +40,14 @@ double avg_plaquette(double* array, int Lx, int Ly, int Lt){
   return plaquette_sum / N_plaquettes;
 }
 
-double jpc_plus(double* array, int Lx, int Ly, int t){
+double jpc_plus(double* array){
   return 0;
 }
 
-double jpc_minus(double* array, int Lx, int Ly, int t){
+double jpc_minus(double* array){
   return 0;
 }
 
-double flux(double* array, int Lx, int Ly, int t){
+double flux(double* array){
   return 0;
 }
