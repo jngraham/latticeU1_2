@@ -122,6 +122,8 @@ int main(){
       flux_data[N_samples*i + t] += flux_data[N_samples*i + t]/N_configs_per_sample;
     }
 
+    std::printf ("%i of %i samples complete\n", int(i+1), N_samples);
+
   }
 
   // for(size_t i = 0; i < N_configs; i++){

@@ -52,38 +52,8 @@ double new_action;
 double C;
 double z;
 
-int update_corners(double* array, double* gauss);
-int update_edges(double* array, double* gauss);
-int update_bulk(double* array, double* gauss);
-
 int update(double* array, double* gauss){
 
-  // for the corners of the lattice (8 of them)
-
-  // update_corners(array, gauss);
-
-  // for the edges of the lattice (12 of them)
-
-  // update_edges(array, gauss);
-
-  // for the bulk of the lattice
-
-  update_bulk(array, gauss);
-
-  return 0;
-}
-
-int update_corners(double* array, double* gauss){
-  return 0;
-}
-
-int update_edges(double* array, double* gauss){
-  return 0;
-}
-
-int update_bulk(double* array, double* gauss){
-
-  int N_links = 3*Lx*Ly*Lt;
   // int N_acceptances = 0;
 
   for (int x = 0; x < Lx; x++){
@@ -121,6 +91,8 @@ int update_bulk(double* array, double* gauss){
         old_action = cos(old_link + staple1) + cos(old_link + staple2) + cos(old_link + staple3) + cos(old_link + staple4);
         new_action = cos(new_link + staple1) + cos(new_link + staple2) + cos(new_link + staple3) + cos(new_link + staple4);
 
+        // note that if the new action is smaller than the old action, then
+        // C > 1 so we accept the new link.
         C = exp(- beta * new_action)/exp(- beta * old_action);
 
         z = real_distribution(update_generator);
