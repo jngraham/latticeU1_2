@@ -9,4 +9,4 @@ Here I declare the function(s) to update the lattice
 /////////////////////////////////////////////////////////////////////////////
 */
 
-int update(float* lattice, int Lx, int Ly, int Lt);
+int update(float* lattice, float* gauss, float beta, int Lx, int Ly, int Lt);
