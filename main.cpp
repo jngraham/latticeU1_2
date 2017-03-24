@@ -13,9 +13,12 @@ my life harder but the computer's life easier.
 
 #include <iostream>
 #include <random>
-#include <stdlib.h>
+
 #include <typeinfo>
 #include <cmath>
+
+#include <stdlib.h>
+#include <stdio.h>
 #include <time.h>
 
 #include "link_update.h"
@@ -33,18 +36,13 @@ const int Lt = 10;
 
 const double beta = 2.2;
 
-const int N_equilibration_configs = 2000;
-const int N_configs_per_sample = 500;
+const int N_equilibration_configs = 200;
+const int N_configs_per_sample = 50;
 const int N_samples = 10;
 
 const int N_configs = N_configs_per_sample * N_samples;
 
 const int N_links = Lx * Ly * Lt * 3;
-
-// set up the RNG
-// seed??
-
-std::default_random_engine generator;
 
 int main(){
 
@@ -54,6 +52,10 @@ int main(){
   const double mu = 0;
   const double sigma = 1.2;
 
+  // set up the RNG
+  // seed??
+
+  std::default_random_engine generator;
   std::normal_distribution<double> gaussian_distribution(mu,sigma);
 
   // set up our V array

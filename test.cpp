@@ -1,17 +1,14 @@
+#include <stdio.h>      /* printf, NULL */
+#include <stdlib.h>     /* srand, rand */
+#include <time.h>       /* time */
 
-#include <iostream>
-
-int bar(double* array, int index){
-
-  array[index] = 2;
+int main ()
+{
+  printf ("First number: %d\n", rand()%100);
+  srand (time(NULL));
+  printf ("Random number: %d\n", rand()%100);
+  srand (1);
+  printf ("Again the first number: %d\n", rand()%100);
 
   return 0;
-}
-
-int main(){
-  double foo [10] = {};
-
-  bar(foo, 3);
-
-  std::cout << foo[3] << std::endl;
 }
