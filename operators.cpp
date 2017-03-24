@@ -40,14 +40,14 @@ double avg_plaquette(double* array){
   return plaquette_sum / N_plaquettes;
 }
 
-double jpc_plus(double* array){
+double jpc_plus(double* array, int t){
   return 0;
 }
 
-double jpc_minus(double* array){
+double jpc_minus(double* array, int t){
   return 0;
 }
 
-double flux(double* array){
+double flux(double* array, int t){
   return 0;
 }

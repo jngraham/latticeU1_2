@@ -61,10 +61,19 @@ int main(){
 
   // set up our data arrays
 
-  double avg_plaquette_data [N_configs] = {0};
-  double jpc_plus_data [Lt*N_configs] = {0};
-  double jpc_minus_data [Lt*N_configs] = {0};
-  double flux_data [Lt*N_configs] = {0};
+  double avg_plaquette_data [N_samples] = {0};
+
+  // coarsest graining will be by sample, then by time
+
+  double jpc_plus_data [Lt*N_samples] = {0};
+  double jpc_minus_data [Lt*N_samples] = {0};
+  double flux_data [Lt*N_samples] = {0};
+
+  // declare the zero-time operators
+
+  double jpc_plus_zero;
+  double jpc_minus_zero;
+  double flux_zero;
 
   // update the field configuration so we "forget" the initial configuration
 
@@ -72,51 +81,136 @@ int main(){
     update(lattice, V);
   }
 
-  // for (int x = 0; x < Lx; x++){
-  //   for (int y = 0; y < Ly; y++){
-  //     for (int t = 0; t < Lt; t++){
-  //
-  //       std::cout << "x: " << x << ", y:" << y << ", t:" << t << ", x link value:" << lattice[3*x + 3*Lx*y + 3*Lx*Ly*t + 0] << ", y link value:" << lattice[3*x + 3*Lx*y + 3*Lx*Ly*t + 1] << ", t link value:" << lattice[3*x + 3*Lx*y + 3*Lx*Ly*t + 2] << "\n";
-  //     }
-  //   }
-  // }
-
   // do the "science run"
 
-  std::ofstream output;
-  output.open("outputs.txt");
+  for (size_t i = 0; i < N_samples; i++){
+    for (size_t j = 0; j < N_configs_per_sample; j++){
 
-  for(size_t i = 0; i < N_configs; i++){
-    update(lattice, V);
+      update(lattice, V);
 
-    // calculate data
+      // add the average plaquette for this configuration
 
-    avg_plaquette_data[i] = avg_plaquette(lattice);
-    // output << avg_plaquette_data[i] << " ";
+      avg_plaquette_data[i] += avg_plaquette(lattice);
+
+      // find the field operators for nt = 0
+
+      jpc_plus_zero = jpc_plus(lattice, 0);
+      jpc_minus_zero = jpc_minus(lattice, 0);
+      flux_zero = flux(lattice, 0);
+
+      // add the phi(0)*phi(0) to the data since we already know what that is
+
+      jpc_plus_data[N_samples*i] += pow(jpc_plus_zero,2);
+      jpc_minus_data[N_samples*i] += pow(jpc_minus_zero,2);
+      flux_data[N_samples*i] += pow(flux_zero,2);
+
+      // find the phi(t)*phi(0) for all other t in each configuration
+
+      for (size_t t = 1; t < Lt; t++){
+        jpc_plus_data[N_samples*i + t] += jpc_plus(lattice, t)*jpc_plus_zero;
+        jpc_minus_data[N_samples*i + t] += jpc_minus(lattice, t)*jpc_minus_zero;
+        flux_data[N_samples*i + t] += flux(lattice, t)*flux_zero;
+      }
+
+    }
+
+    avg_plaquette_data[i] = avg_plaquette_data[i]/N_configs_per_sample;
+
+    for (size_t t = 0; t < Lt; t++){
+      jpc_plus_data[N_samples*i + t] += jpc_plus_data[N_samples*i + t]/N_configs_per_sample;
+      jpc_minus_data[N_samples*i + t] += jpc_minus_data[N_samples*i + t]/N_configs_per_sample;
+      flux_data[N_samples*i + t] += flux_data[N_samples*i + t]/N_configs_per_sample;
+    }
 
   }
+
+  // for(size_t i = 0; i < N_configs; i++){
+  //   update(lattice, V);
+  //
+  //   // calculate data
+  //
+  //   avg_plaquette_data[i] = avg_plaquette(lattice);
+  //   // output << avg_plaquette_data[i] << " ";
+  //
+  // }
 
   // output << std::endl;
 
   clock_t t2 = clock();
 
-  // return or otherwise output data
+  // Output data to .csv so I can use excel or mathematica or python or whatever
 
-  double sum = 0;
+  std::ofstream plaquette_output;
+  std::ofstream mplus_output;
+  std::ofstream mminus_output;
+  std::ofstream flux_output;
 
-  for(size_t i = 0; i < N_configs; i++){
-    sum += avg_plaquette_data[i];
+  std::string params = "_" + std::to_string(Lx) + "x" + std::to_string(Ly) + "x" + std::to_string(Lt) + "_beta" + std::to_string(int(10*(beta-2)));
+  plaquette_output.open("plaquette"+params+".csv");
+  mplus_output.open("mplus"+params+".csv");
+  mminus_output.open("mminus"+params+".csv");
+  flux_output.open("flux"+params+".csv");
+
+  plaquette_output << "Configuration,value,\n";
+
+  mplus_output << "Configuration,";
+  mminus_output << "Configuration,";
+  flux_output << "Configuration,";
+
+  for (size_t t = 0; t < Lt; t++){
+    mplus_output << t << ",";
+    mminus_output << t << ",";
+    flux_output << t << ",";
   }
+
+  mplus_output << "\n";
+  mminus_output << "\n";
+  flux_output << "\n";
+
+  for (size_t i = 0; i < N_samples; i++){
+
+    plaquette_output << i << "," << avg_plaquette_data[i] << ",\n";
+
+    mplus_output << i << ",";
+    mminus_output << i << ",";
+    flux_output << i << ",";
+
+    for (size_t t = 0; t < Lt; t++){
+      mplus_output << jpc_plus_data[N_samples*i + t] << ",";
+      mminus_output << jpc_minus_data[N_samples*i + t] << ",";
+      flux_output << flux_data[N_samples*i + t] << ",";
+    }
+
+    mplus_output << "\n";
+    mminus_output << "\n";
+    flux_output << "\n";
+  }
+
+  plaquette_output.close();
+  mplus_output.close();
+  mminus_output.close();
+  flux_output.close();
 
   clock_t t3 = clock();
 
-  output << "<cos U_p> = " << sum / N_configs << std::endl;
+  // output some data for my writing-code purposes
+
+  double sum = 0;
+
+  for(size_t i = 0; i < N_samples; i++){
+    sum += avg_plaquette_data[i];
+  }
+
+  std::ofstream output;
+  output.open("outputs.txt");
+
+  output << "<cos U_p> = " << sum / N_samples << std::endl;
   // std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
 
   output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
-  // std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
+  std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
   output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
-  // std::cout << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << "\n";
+  std::cout << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << "\n";
 
   output.close();
 }
