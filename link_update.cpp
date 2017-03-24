@@ -51,11 +51,11 @@ double new_action;
 double C;
 double z;
 
-int update(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
+int update_corners(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
+int update_edges(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
+int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
 
-  int update_corners(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
-  int update_edges(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
-  int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int Lt);
+int update(double* array, double* gauss, double beta, int Lx, int Ly, int Lt){
 
   // for the corners of the lattice (8 of them)
 
@@ -110,6 +110,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
 
         old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
         new_link = old_link + gauss[int_distribution(update_generator)];
+        // new_link = old_link + gauss[int_distribution(generator)];
 
         staple1 = array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
         staple2 = - array[3*xnext + 3*Lx*yprev + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 0] + array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 1];
@@ -122,6 +123,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
         C = exp(- beta * new_action)/exp(- beta * old_action);
 
         z = real_distribution(update_generator);
+        // z = real_distribution(generator);
 
         if (z < C){
           // N_acceptances++;
@@ -132,6 +134,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
 
         old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
         new_link = old_link + gauss[int_distribution(update_generator)];
+        // new_link = old_link + gauss[int_distribution(generator)];
 
         staple1 = array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
         staple2 = - array[3*xprev + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 1] + array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 0];
@@ -144,6 +147,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
         C = exp(- beta * new_action)/exp(- beta * old_action);
 
         z = real_distribution(update_generator);
+        // z = real_distribution(generator);
 
         if (z < C){
           // N_acceptances++;
@@ -154,6 +158,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
 
         old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
         new_link = old_link + gauss[int_distribution(update_generator)];
+        // new_link = old_link + gauss[int_distribution(generator)];
 
         staple1 = array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
         staple2 = - array[3*xprev + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 2] + array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 0];
@@ -166,6 +171,7 @@ int update_bulk(double* array, double* gauss, double beta, int Lx, int Ly, int L
         C = exp(- beta * new_action)/exp(- beta * old_action);
 
         z = real_distribution(update_generator);
+        // z = real_distribution(generator);
 
         if (z < C){
           // N_acceptances++;

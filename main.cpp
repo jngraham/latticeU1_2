@@ -115,8 +115,11 @@ int main(){
     // calculate data
 
     avg_plaquette_data[i] = avg_plaquette(lattice, Lx, Ly, Lt);
+    // output << avg_plaquette_data[i] << " ";
 
   }
+
+  // output << std::endl;
 
   clock_t t2 = clock();
 
