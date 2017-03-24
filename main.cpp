@@ -55,7 +55,7 @@ int main(){
   // set up the RNG
   // seed??
 
-  std::default_random_engine generator;
+  std::mt19937 generator(time(0));
   std::normal_distribution<double> gaussian_distribution(mu,sigma);
 
   // set up our V array
