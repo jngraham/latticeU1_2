@@ -31,7 +31,7 @@ const int Lt = 10;
 
 // Parameters for the simulation
 
-const float beta = 2.2;
+const double beta = 2.2;
 
 const int N_equilibration_configs = 2000;
 const int N_configs_per_sample = 500;
@@ -51,17 +51,17 @@ int main(){
   // Parameters for selecting a new link
 
   const int N_V = 200;
-  const float mu = 0;
-  const float sigma = 1.2;
+  const double mu = 0;
+  const double sigma = 1.2;
 
-  std::normal_distribution<float> gaussian_distribution(mu,sigma);
+  std::normal_distribution<double> gaussian_distribution(mu,sigma);
 
   // set up our V array
 
-  float V [N_V];
+  double V [N_V];
 
   for (size_t i = 0; i < N_V; i += 2){
-    float number = gaussian_distribution(generator);
+    double number = gaussian_distribution(generator);
     V[i] = number;
     V[i+1] = -number;
   }
@@ -75,14 +75,14 @@ int main(){
   And finally we put all the links next to each other for each x.
   */
 
-  float lattice [N_links] = {0};
+  double lattice [N_links] = {0};
 
   // set up our data arrays
 
-  float avg_plaquette_data [N_configs] = {0};
-  float jpc_plus_data [Lt*N_configs] = {0};
-  float jpc_minus_data [Lt*N_configs] = {0};
-  float flux_data [Lt*N_configs] = {0};
+  double avg_plaquette_data [N_configs] = {0};
+  double jpc_plus_data [Lt*N_configs] = {0};
+  double jpc_minus_data [Lt*N_configs] = {0};
+  double flux_data [Lt*N_configs] = {0};
 
   // update the field configuration so we "forget" the initial configuration
 
@@ -114,7 +114,7 @@ int main(){
 
   // return or otherwise output data
 
-  float sum = 0;
+  double sum = 0;
 
   for(size_t i = 0; i < N_configs; i++){
     sum += avg_plaquette_data[i];
@@ -123,8 +123,8 @@ int main(){
 
   clock_t t3 = clock();
 
-  std::cout << "time 1: " << (float(t2) - float(t1)) / CLOCKS_PER_SEC << "\n";
-  std::cout << "time 2: " << (float(t3) - float(t1)) / CLOCKS_PER_SEC << "\n";
+  std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
+  std::cout << "time 2: " << (double(t3) - double(t1)) / CLOCKS_PER_SEC << "\n";
 
 }
 

@@ -13,15 +13,15 @@ Here I write the functions for the field operators on the lattice
 
 #include "operators.h"
 
-float avg_plaquette(float* array, int Lx, int Ly, int Lt){
+double avg_plaquette(double* array, int Lx, int Ly, int Lt){
 
-  float plaquette_sum = 0;
+  double plaquette_sum = 0;
 
   int N_plaquettes = 3*Lx*Ly*Lt;
 
-  float p_xy = 0;
-  float p_xt = 0;
-  float p_yt = 0;
+  double p_xy = 0;
+  double p_xt = 0;
+  double p_yt = 0;
 
   for (int x = 0; x < Lx; x++){
     for (int y = 0; y < Ly; y++){
@@ -39,14 +39,14 @@ float avg_plaquette(float* array, int Lx, int Ly, int Lt){
   return plaquette_sum / N_plaquettes;
 }
 
-float jpc_plus(float* array, int Lx, int Ly, int t){
+double jpc_plus(double* array, int Lx, int Ly, int t){
   return 0;
 }
 
-float jpc_minus(float* array, int Lx, int Ly, int t){
+double jpc_minus(double* array, int Lx, int Ly, int t){
   return 0;
 }
 
-float flux(float* array, int Lx, int Ly, int t){
+double flux(double* array, int Lx, int Ly, int t){
   return 0;
 }
