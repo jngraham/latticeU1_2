@@ -71,6 +71,7 @@ int main(){
 
   // declare the zero-time operators
 
+  double this_avg_plaquette;
   double jpc_plus_zero;
   double jpc_minus_zero;
   double flux_zero;
@@ -90,7 +91,9 @@ int main(){
 
       // add the average plaquette for this configuration
 
-      avg_plaquette_data[i] += avg_plaquette(lattice);
+      this_avg_plaquette = avg_plaquette(lattice);
+
+      avg_plaquette_data[i] += this_avg_plaquette;
 
       // find the field operators for nt = 0
 
@@ -107,7 +110,7 @@ int main(){
       // find the phi(t)*phi(0) for all other t in each configuration
 
       for (size_t t = 1; t < Lt; t++){
-        jpc_plus_data[N_samples*i + t] += jpc_plus(lattice, t)*jpc_plus_zero;
+        jpc_plus_data[N_samples*i + t] += jpc_plus(lattice, this_avg_plaquette, t)*jpc_plus_zero;
         jpc_minus_data[N_samples*i + t] += jpc_minus(lattice, t)*jpc_minus_zero;
         flux_data[N_samples*i + t] += flux(lattice, t)*flux_zero;
       }
@@ -126,18 +129,6 @@ int main(){
 
   }
 
-  // for(size_t i = 0; i < N_configs; i++){
-  //   update(lattice, V);
-  //
-  //   // calculate data
-  //
-  //   avg_plaquette_data[i] = avg_plaquette(lattice);
-  //   // output << avg_plaquette_data[i] << " ";
-  //
-  // }
-
-  // output << std::endl;
-
   clock_t t2 = clock();
 
   // Output data to .csv so I can use excel or mathematica or python or whatever
@@ -153,16 +144,16 @@ int main(){
   mminus_output.open("mminus"+params+".csv");
   flux_output.open("flux"+params+".csv");
 
-  plaquette_output << "Configuration,value,\n";
+  plaquette_output << "Sample #,value,\n";
 
-  mplus_output << "Configuration,";
-  mminus_output << "Configuration,";
-  flux_output << "Configuration,";
+  mplus_output << "Sample #,";
+  mminus_output << "Sample #,";
+  flux_output << "Sample #,";
 
   for (size_t t = 0; t < Lt; t++){
-    mplus_output << t << ",";
-    mminus_output << t << ",";
-    flux_output << t << ",";
+    mplus_output << "time " << t << ",";
+    mminus_output << "time " << t << ",";
+    flux_output << "time " << t << ",";
   }
 
   mplus_output << "\n";

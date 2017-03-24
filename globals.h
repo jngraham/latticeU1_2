@@ -21,7 +21,7 @@ const double beta = 2.2;
 
 const int N_equilibration_configs = 2000;
 const int N_configs_per_sample = 500;
-const int N_samples = 10;
+const int N_samples = 6;
 
 const int N_configs = N_configs_per_sample * N_samples;
 
