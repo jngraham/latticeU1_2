@@ -12,6 +12,8 @@ my life harder but the computer's life easier.
 */
 
 #include <iostream>
+#include <fstream>
+
 #include <random>
 
 #include <typeinfo>
@@ -36,8 +38,8 @@ const int Lt = 10;
 
 const double beta = 2.2;
 
-const int N_equilibration_configs = 200;
-const int N_configs_per_sample = 50;
+const int N_equilibration_configs = 2000;
+const int N_configs_per_sample = 500;
 const int N_samples = 10;
 
 const int N_configs = N_configs_per_sample * N_samples;
@@ -55,7 +57,8 @@ int main(){
   // set up the RNG
   // seed??
 
-  std::mt19937 generator(time(0));
+  // std::mt19937 generator(time(0));
+  std::default_random_engine generator;
   std::normal_distribution<double> gaussian_distribution(mu,sigma);
 
   // set up our V array
@@ -103,6 +106,9 @@ int main(){
 
   // do the "science run"
 
+  std::ofstream output;
+  output.open("outputs.txt");
+
   for(size_t i = 0; i < N_configs; i++){
     update(lattice, V, beta, Lx, Ly, Lt);
 
@@ -121,13 +127,18 @@ int main(){
   for(size_t i = 0; i < N_configs; i++){
     sum += avg_plaquette_data[i];
   }
-  std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
 
   clock_t t3 = clock();
 
-  std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
-  std::cout << "time 2: " << (double(t3) - double(t1)) / CLOCKS_PER_SEC << "\n";
+  output << "<cos U_p> = " << sum / N_configs << std::endl;
+  // std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
 
+  output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
+  // std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
+  output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
+  // std::cout << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << "\n";
+
+  output.close();
 }
 
 /*
