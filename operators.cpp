@@ -108,8 +108,6 @@ double flux(double* array, int t, double* re_ptr, double* im_ptr){
     phase_sum = 0;
   }
 
-  if (t==0) std::cout << im_sum << "\n";
-
   *re_ptr = re_sum;
   *im_ptr = im_sum;
 
