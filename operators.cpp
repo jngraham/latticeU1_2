@@ -57,9 +57,50 @@ double jpc_plus(double* array, double VEV, int t){
 }
 
 double jpc_minus(double* array, int t){
-  return 0;
+
+  int xnext;
+  int ynext;
+
+  double sum = 0;
+
+  double p_xy = 0;
+
+  for (int x = 0; x < Lx; x++){
+
+    xnext = (x+1)%Lx;
+
+    for(int y = 0; y < Ly; y++){
+
+      ynext = (y+1)%Ly;
+
+      p_xy = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0] + array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
+
+      sum += sin(p_xy);
+    }
+  }
+
+  return sum;
 }
 
-double flux(double* array, int t){
+double flux(double* array, int t, double* re_ptr, double* im_ptr){
+
+  double phase_sum = 0;
+  double re_sum = 0;
+  double im_sum = 0;
+
+  for (int y = 0; y < Ly; y++){
+    for (int x = 0; x < Lx; x++){
+      phase_sum += array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
+    }
+
+    re_sum += cos(phase_sum);
+    im_sum += sin(phase_sum);
+
+    phase_sum = 0;
+  }
+
+  *re_ptr = re_sum;
+  *im_ptr = im_sum;
+
   return 0;
 }

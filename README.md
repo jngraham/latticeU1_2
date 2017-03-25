@@ -16,3 +16,5 @@ My file main.cpp updates the lattice the appropriate number of times and extract
 Still not wholly confident that my update() function in link_update.cpp is correct, mainly because I rewrote it from scratch in a way to get rid of the huge amount of modular arithmetic I was doing and got a totally different answer for <cos(U_p)>, which is calculated using the avg_plaquette() function, which I did not change. I am confident that my avg_plaquette() is correct. But! I just rewrote avg_plaquette() in a way to stop evaluating % everywhere and I get a totally different <cos(U_p)>! I obviously have a long way to go...
 
 I have yet to write the other operators. I'll get to that in due course.
+
+I totally missed the fact that the flux tube operator is not real-valued, so I had to restructure how the corresonding function goes and how I call it in main. The flux tube data array has a similar arrangement as the lattice, except we now have sample number, time coordinate and Re / Im for our sums of complex exponentials.

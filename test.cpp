@@ -4,6 +4,12 @@
 #include <stdlib.h>     /* srand, rand */
 #include <time.h>       /* time */
 
+int foo(double* bar){
+  *bar = 3;
+
+  return 0;
+}
+
 int main ()
 {
   const int Lx = 4;
@@ -31,5 +37,11 @@ int main ()
   }
 
   std::cout << std::endl;
+
+  double flux [10] = {0};
+
+  foo(&flux[5]);
+
+  std::cout << "after using foo(), flux[5] should be 3: " << flux[5] << std::endl;
 
 }

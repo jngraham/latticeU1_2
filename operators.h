@@ -20,4 +20,4 @@ double jpc_plus(double* lattice, double VEV, int t);
 
 double jpc_minus(double* lattice, int t);
 
-double flux(double* lattice, int t);
+double flux(double* lattice, int t, double* re_ptr, double* im_ptr);

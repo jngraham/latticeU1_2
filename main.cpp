@@ -23,9 +23,11 @@ my life harder but the computer's life easier.
 #include <stdio.h>
 #include <time.h>
 
+#include "globals.h"
+
 #include "link_update.h"
 #include "operators.h"
-#include "globals.h"
+#include "write.h"
 
 clock_t t1 = clock();
 
@@ -64,17 +66,19 @@ int main(){
   double avg_plaquette_data [N_samples] = {0};
 
   // coarsest graining will be by sample, then by time
+  // and in the case of the flux tube, by real and imaginary part
 
   double jpc_plus_data [Lt*N_samples] = {0};
   double jpc_minus_data [Lt*N_samples] = {0};
-  double flux_data [Lt*N_samples] = {0};
+  double flux_data [Lt*N_samples*2] = {0};
 
   // declare the zero-time operators
 
   double this_avg_plaquette;
   double jpc_plus_zero;
   double jpc_minus_zero;
-  double flux_zero;
+  double flux_zero [2];
+  double flux_pair [2];
 
   // update the field configuration so we "forget" the initial configuration
 
@@ -87,6 +91,10 @@ int main(){
   // do the "science run"
 
   for (size_t i = 0; i < N_samples; i++){
+
+    // update the lattice then compute <\phi^\dagger(nt)\phi(0)> for all
+    // our operators
+
     for (size_t j = 0; j < N_configs_per_sample; j++){
 
       update(lattice, V);
@@ -98,33 +106,50 @@ int main(){
       avg_plaquette_data[i] += this_avg_plaquette;
 
       // find the field operators for nt = 0
+      // the jpc operators are real-valued
 
       jpc_plus_zero = jpc_plus(lattice, this_avg_plaquette, 0);
       jpc_minus_zero = jpc_minus(lattice, 0);
-      flux_zero = flux(lattice, 0);
+      flux(lattice, 0, &flux_zero[0], &flux_zero[1]);
 
       // add the phi(0)*phi(0) to the data since we already know what that is
 
-      jpc_plus_data[N_samples*i] += pow(jpc_plus_zero,2);
-      jpc_minus_data[N_samples*i] += pow(jpc_minus_zero,2);
-      flux_data[N_samples*i] += pow(flux_zero,2);
+      jpc_plus_data[Lt*i] += pow(jpc_plus_zero,2);
+      jpc_minus_data[Lt*i] += pow(jpc_minus_zero,2);
+      flux_data[2*Lt*i] += 1;
+
+      // this line is not strictly necessary bc we initialize it to zero.
+      // flux_data[2*Lt*i + 1] += 0;
 
       // find the phi(t)*phi(0) for all other t in each configuration
 
       for (size_t t = 1; t < Lt; t++){
-        jpc_plus_data[N_samples*i + t] += jpc_plus(lattice, this_avg_plaquette, t)*jpc_plus_zero;
-        jpc_minus_data[N_samples*i + t] += jpc_minus(lattice, t)*jpc_minus_zero;
-        flux_data[N_samples*i + t] += flux(lattice, t)*flux_zero;
+        jpc_plus_data[Lt*i + t] += jpc_plus(lattice, this_avg_plaquette, t)*jpc_plus_zero;
+        jpc_minus_data[Lt*i + t] += jpc_minus(lattice, t)*jpc_minus_zero;
+
+        // the flux operator returns a complex exponential so we need to take
+        // care of the real and imaginary pieces
+
+        flux(lattice, t, &flux_pair[0], &flux_pair[1]);
+
+        // real part
+        flux_data[2*Lt*i + 2*t] += flux_pair[0]*flux_zero[0] + flux_pair[1]*flux_pair[1];
+
+        // imaginary part
+        flux_data[2*Lt*i + 2*t + 1] += flux_pair[0]*flux_zero[1] - flux_pair[1]*flux_zero[0];
       }
 
     }
 
+    // thus far we have sums but
     avg_plaquette_data[i] = avg_plaquette_data[i]/N_configs_per_sample;
 
     for (size_t t = 0; t < Lt; t++){
-      jpc_plus_data[N_samples*i + t] += jpc_plus_data[N_samples*i + t]/N_configs_per_sample;
-      jpc_minus_data[N_samples*i + t] += jpc_minus_data[N_samples*i + t]/N_configs_per_sample;
-      flux_data[N_samples*i + t] += flux_data[N_samples*i + t]/N_configs_per_sample;
+      jpc_plus_data[Lt*i + t] = jpc_plus_data[Lt*i + t]/N_configs_per_sample;
+      jpc_minus_data[Lt*i + t] = jpc_minus_data[Lt*i + t]/N_configs_per_sample;
+
+      flux_data[2*Lt*i + 2*t] = flux_data[2*Lt*i + 2*t]/N_configs_per_sample;
+      flux_data[2*Lt*i + 2*t + 1] = flux_data[2*Lt*i + 2*t + 1]/N_configs_per_sample;
     }
 
     std::printf ("%i of %i samples complete\n", int(i+1), N_samples);
@@ -133,58 +158,7 @@ int main(){
 
   clock_t t2 = clock();
 
-  // Output data to .csv so I can use excel or mathematica or python or whatever
-
-  std::ofstream plaquette_output;
-  std::ofstream mplus_output;
-  std::ofstream mminus_output;
-  std::ofstream flux_output;
-
-  std::string params = "_" + std::to_string(Lx) + "x" + std::to_string(Ly) + "x" + std::to_string(Lt) + "_beta" + std::to_string(int(10*(beta-2)));
-  plaquette_output.open("plaquette"+params+".csv");
-  mplus_output.open("mplus"+params+".csv");
-  mminus_output.open("mminus"+params+".csv");
-  flux_output.open("flux"+params+".csv");
-
-  plaquette_output << "Sample #,value,\n";
-
-  mplus_output << "Sample #,";
-  mminus_output << "Sample #,";
-  flux_output << "Sample #,";
-
-  for (size_t t = 0; t < Lt; t++){
-    mplus_output << "time " << t << ",";
-    mminus_output << "time " << t << ",";
-    flux_output << "time " << t << ",";
-  }
-
-  mplus_output << "\n";
-  mminus_output << "\n";
-  flux_output << "\n";
-
-  for (size_t i = 0; i < N_samples; i++){
-
-    plaquette_output << i << "," << avg_plaquette_data[i] << ",\n";
-
-    mplus_output << i << ",";
-    mminus_output << i << ",";
-    flux_output << i << ",";
-
-    for (size_t t = 0; t < Lt; t++){
-      mplus_output << jpc_plus_data[N_samples*i + t] << ",";
-      mminus_output << jpc_minus_data[N_samples*i + t] << ",";
-      flux_output << flux_data[N_samples*i + t] << ",";
-    }
-
-    mplus_output << "\n";
-    mminus_output << "\n";
-    flux_output << "\n";
-  }
-
-  plaquette_output.close();
-  mplus_output.close();
-  mminus_output.close();
-  flux_output.close();
+  write(avg_plaquette_data, jpc_plus_data, jpc_minus_data, flux_data);
 
   clock_t t3 = clock();
 
@@ -196,18 +170,18 @@ int main(){
     sum += avg_plaquette_data[i];
   }
 
-  std::ofstream output;
-  output.open("outputs.txt");
+  // std::ofstream output;
+  // output.open("outputs.txt");
 
-  output << "<cos U_p> = " << sum / N_samples << std::endl;
+  // output << "<cos U_p> = " << sum / N_samples << std::endl;
   std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
 
-  output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
+  // output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
-  output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
+  // output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << "\n";
 
-  output.close();
+  // output.close();
 }
 
 /*
