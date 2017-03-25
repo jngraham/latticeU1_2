@@ -174,7 +174,7 @@ int main(){
   // output.open("outputs.txt");
 
   // output << "<cos U_p> = " << sum / N_samples << std::endl;
-  std::cout << "<cos U_p> = " << sum / N_configs << std::endl;
+  std::cout << "<cos U_p> = " << sum / N_samples << std::endl;
 
   // output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";

@@ -33,10 +33,15 @@ std::uniform_real_distribution<double> real_distribution(0.0,1.0);
 
 int update(double* array, double* gauss){
 
+  int xthis;
   int xnext;
   int xprev;
+
+  int ythis;
   int ynext;
   int yprev;
+
+  int tthis;
   int tnext;
   int tprev;
 
@@ -60,33 +65,36 @@ int update(double* array, double* gauss){
 
     // get x neighbour coordinates
 
-    xnext = (x+1)%Lx;
-    xprev = (x+Lx-1)%Lx;
+    xthis = 3*x;
+    xnext = 3*((x+1)%Lx);
+    xprev = 3*((x+Lx-1)%Lx);
 
     for (int y = 0; y < Ly; y++){
 
       // get y neighbour coordinates
 
-      ynext = (y+1)%Ly;
-      yprev = (y+Ly-1)%Ly;
+      ythis = 3*Lx*y;
+      ynext = 3*Lx*((y+1)%Ly);
+      yprev = 3*Lx*((y+Ly-1)%Ly);
 
       for (int t = 0; t < Lt; t++){
 
         // get t neighbour coordinates
 
-        tnext = (t+1)%Lt;
-        tprev = (t+Lt-1)%Lt;
+        tthis = 3*Lx*Ly*t;
+        tnext = 3*Lx*Ly*((t+1)%Lt);
+        tprev = 3*Lx*Ly*((t+Lt-1)%Lt);
 
         // update the x link
 
-        old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
+        old_link = array[xthis + ythis + tthis];
         new_link = old_link + gauss[int_distribution(update_generator)];
         // new_link = old_link + gauss[int_distribution(generator)];
 
-        staple1 = array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
-        staple2 = - array[3*xnext + 3*Lx*yprev + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 0] + array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 1];
-        staple3 = array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
-        staple4 = - array[3*xnext + 3*Lx*y + 3*Lx*Ly*tprev + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tprev + 0] + array[3*x + 3*Lx*y + 3*Lx*Ly*tprev + 2];
+        staple1 = array[xnext + ythis + tthis + 1] - array[xthis + ynext + tthis] - array[xthis + ythis + tthis + 1];
+        staple2 = - array[xnext + yprev + tthis + 1] - array[xthis + yprev + tthis] + array[xthis + yprev + tthis + 1];
+        staple3 = array[xnext + ythis + tthis + 2] - array[xthis + ythis + tnext] - array[xthis + ythis + tthis + 2];
+        staple4 = - array[xnext + ythis + tprev + 2] - array[xthis + ythis + tprev] + array[xthis + ythis + tprev + 2];
 
         old_action = cos(old_link + staple1) + cos(old_link + staple2) + cos(old_link + staple3) + cos(old_link + staple4);
         new_action = cos(new_link + staple1) + cos(new_link + staple2) + cos(new_link + staple3) + cos(new_link + staple4);
@@ -100,19 +108,19 @@ int update(double* array, double* gauss){
 
         if (z < C){
           // N_acceptances++;
-          array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0] = new_link;
+          array[xthis + ythis + tthis] = new_link;
         }
 
         // update the y link
 
-        old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
+        old_link = array[xthis + ythis + tthis + 1];
         new_link = old_link + gauss[int_distribution(update_generator)];
         // new_link = old_link + gauss[int_distribution(generator)];
 
-        staple1 = array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
-        staple2 = - array[3*xprev + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 1] + array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 0];
-        staple3 = array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 1] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
-        staple4 = - array[3*x + 3*Lx*ynext + 3*Lx*Ly*tprev + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tprev + 0] + array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
+        staple1 = array[xthis + ynext + tthis] - array[xnext + ythis + tthis + 1] - array[xthis + ythis + tthis];
+        staple2 = - array[xprev + ynext + tthis] - array[xprev + ythis + tthis + 1] + array[xprev + ythis + tthis];
+        staple3 = array[xthis + ynext + tthis + 2] - array[xthis + ythis + tnext + 1] - array[xthis + ythis + tthis + 2];
+        staple4 = - array[xthis + ynext + tprev + 2] - array[xthis + ythis + tprev + 1] + array[xthis + ythis + tprev + 2];
 
         old_action = cos(old_link + staple1) + cos(old_link + staple2) + cos(old_link + staple3) + cos(old_link + staple4);
         new_action = cos(new_link + staple1) + cos(new_link + staple2) + cos(new_link + staple3) + cos(new_link + staple4);
@@ -124,19 +132,19 @@ int update(double* array, double* gauss){
 
         if (z < C){
           // N_acceptances++;
-          array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1] = new_link;
+          array[xthis + ythis + tthis + 1] = new_link;
         }
 
         // update the t link
 
-        old_link = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
+        old_link = array[xthis + ythis + tthis + 2];
         new_link = old_link + gauss[int_distribution(update_generator)];
         // new_link = old_link + gauss[int_distribution(generator)];
 
-        staple1 = array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0];
-        staple2 = - array[3*xprev + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 2] + array[3*xprev + 3*Lx*y + 3*Lx*Ly*t + 0];
-        staple3 = array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 1] - array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
-        staple4 = - array[3*x + 3*Lx*yprev + 3*Lx*Ly*tnext + 1] - array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 2] + array[3*x + 3*Lx*yprev + 3*Lx*Ly*t + 1];
+        staple1 = array[xthis + ythis + tnext] - array[xnext + ythis + tthis + 2] - array[xthis + ythis + tthis];
+        staple2 = - array[xprev + ythis + tnext] - array[xprev + ythis + tthis + 2] + array[xprev + ythis + tthis];
+        staple3 = array[xthis + ythis + tnext + 1] - array[xthis + ynext + tthis + 2] - array[xthis + ythis + tthis + 1];
+        staple4 = - array[xthis + yprev + tnext + 1] - array[xthis + yprev + tthis + 2] + array[xthis + yprev + tthis + 1];
 
         old_action = cos(old_link + staple1) + cos(old_link + staple2) + cos(old_link + staple3) + cos(old_link + staple4);
         new_action = cos(new_link + staple1) + cos(new_link + staple2) + cos(new_link + staple3) + cos(new_link + staple4);
@@ -148,7 +156,7 @@ int update(double* array, double* gauss){
 
         if (z < C){
           // N_acceptances++;
-          array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2] = new_link;
+          array[xthis + ythis + tthis + 2] = new_link;
         }
 
       }

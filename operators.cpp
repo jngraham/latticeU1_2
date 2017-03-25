@@ -16,8 +16,13 @@ Here I write the functions for the field operators on the lattice
 
 double avg_plaquette(double* array){
 
+  int xthis;
   int xnext;
+
+  int ythis;
   int ynext;
+
+  int tthis;
   int tnext;
 
   double plaquette_sum = 0;
@@ -30,19 +35,22 @@ double avg_plaquette(double* array){
 
   for (int x = 0; x < Lx; x++){
 
-    xnext = (x+1)%Lx;
+    xthis = 3*x;
+    xnext = 3*((x+1)%Lx);
 
     for (int y = 0; y < Ly; y++){
 
-      ynext = (y+1)%Ly;
+      ythis = 3*Lx*y;
+      ynext = 3*Lx*((y+1)%Ly);
 
       for (int t = 0; t < Lt; t++){
 
-        tnext = (t+1)%Lt;
+        tthis = 3*Lx*Ly*t;
+        tnext = 3*Lx*Ly*((t+1)%Lt);
 
-        p_xy = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0] + array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 1] - array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1];
-        p_xt = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 0] + array[3*xnext + 3*Lx*y + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 0] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
-        p_yt = array[3*x + 3*Lx*y + 3*Lx*Ly*t + 1] + array[3*x + 3*Lx*ynext + 3*Lx*Ly*t + 2] - array[3*x + 3*Lx*y + 3*Lx*Ly*tnext + 1] - array[3*x + 3*Lx*y + 3*Lx*Ly*t + 2];
+        p_xy = array[xthis + ythis + tthis] + array[xnext + ythis + tthis + 1] - array[xthis + ynext + tthis] - array[xthis + ythis + tthis + 1];
+        p_xt = array[xthis + ythis + tthis] + array[xnext + ythis + tthis + 2] - array[xthis + ythis + tnext] - array[xthis + ythis + tthis + 2];
+        p_yt = array[xthis + ythis + tthis + 1] + array[xthis + ynext + tthis + 2] - array[xthis + ythis + tnext + 1] - array[xthis + ythis + tthis + 2];
 
         plaquette_sum = plaquette_sum + cos(p_xy) + cos(p_xt) + cos(p_yt);
       }
