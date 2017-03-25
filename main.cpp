@@ -154,7 +154,10 @@ int main(){
       flux_data[2*Lt*i + 2*t + 1] = flux_data[2*Lt*i + 2*t + 1]/N_configs_per_sample;
     }
 
-    std::printf ("%i of %i samples complete\n", int(i+1), N_samples);
+    std::ofstream status;
+    status.open("status.txt");
+    status <<  int(i+1) << " of " << N_samples << "samples complete\n";
+    status.close();
 
   }
 
