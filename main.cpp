@@ -36,8 +36,8 @@ int main(){
   // set up the RNG
   // seed??
 
-  // std::mt19937 generator(time(0));
-  std::default_random_engine generator;
+  std::mt19937 generator(time(0));
+  // std::default_random_engine generator;
   std::normal_distribution<double> gaussian_distribution(mu,sigma);
 
   // set up our V array
@@ -114,16 +114,18 @@ int main(){
 
       // add the phi(0)*phi(0) to the data since we already know what that is
 
-      jpc_plus_data[Lt*i] += pow(jpc_plus_zero,2);
-      jpc_minus_data[Lt*i] += pow(jpc_minus_zero,2);
-      flux_data[2*Lt*i] += 1;
+      // jpc_plus_data[Lt*i] += pow(jpc_plus_zero,2);
+      // jpc_minus_data[Lt*i] += pow(jpc_minus_zero,2);
+      //
+      // // i screwed this up; shouldn't be 1 - it's only 1 for the *first configuration*
+      // flux_data[2*Lt*i] += 1;
 
       // this line is not strictly necessary bc we initialize it to zero.
       // flux_data[2*Lt*i + 1] += 0;
 
       // find the phi(t)*phi(0) for all other t in each configuration
 
-      for (size_t t = 1; t < Lt; t++){
+      for (size_t t = 0; t < Lt; t++){
         jpc_plus_data[Lt*i + t] += jpc_plus(lattice, this_avg_plaquette, t)*jpc_plus_zero;
         jpc_minus_data[Lt*i + t] += jpc_minus(lattice, t)*jpc_minus_zero;
 
@@ -170,18 +172,18 @@ int main(){
     sum += avg_plaquette_data[i];
   }
 
-  // std::ofstream output;
-  // output.open("outputs.txt");
+  std::ofstream output;
+  output.open("outputs.txt");
 
-  // output << "<cos U_p> = " << sum / N_samples << std::endl;
+  output << "<cos U_p> = " << sum / N_samples << std::endl;
   std::cout << "<cos U_p> = " << sum / N_samples << std::endl;
 
-  // output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
+  output << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 1: " << (double(t2) - double(t1)) / CLOCKS_PER_SEC << "\n";
-  // output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
+  output << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << std::endl;
   std::cout << "time 2: " << (double(t3) - double(t2)) / CLOCKS_PER_SEC << "\n";
 
-  // output.close();
+  output.close();
 }
 
 /*
